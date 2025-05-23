@@ -6,6 +6,7 @@ phases:
       nodejs: 18
     commands:
       - npm ci
+      - npm install @plasmicapp/loader-nextjs@latest
       - npm cache clean --force
 
   pre_build:
@@ -13,9 +14,23 @@ phases:
       - echo "Starting build process"
       - npm --version
       - node --version
+      - echo "Creating next.config.js"
+      - |
+        echo 'const { withPlasmic } = require("@plasmicapp/loader-nextjs");
+        module.exports = withPlasmic({
+          plasmic: {
+            projects: [
+              {
+                projectId: "your-project-id",
+                token: process.env.PLASMIC_TOKEN
+              }
+            ]
+          }
+        });' > next.config.js
 
   build:
     commands:
+      - echo "Building Next.js application"
       - npm run build --no-lint
       - npm run export
 
@@ -24,6 +39,7 @@ phases:
       - echo "Build completed on `date`"
       - ls -la .next
       - ls -la out
+      - echo "Verifying build artifacts"
 
 artifacts:
   files:
