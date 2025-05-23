@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
+import { useRouter } from 'next/router';
 
 export default function LinkedAccounts() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,22 +44,20 @@ export default function LinkedAccounts() {
               const data = await result.json();
 
               if (data.success) {
-                console.log('Successfully authenticated with Facebook!', data.user);
-                // Here you would typically:
-                // 1. Update the UI to show the connected state
-                // 2. Store the user data in your app's state management
-                // 3. Redirect to a success page or show a success message
+                // Redirect to success page
+                router.push('/linkedaccounts/successful');
               } else {
-                throw new Error(data.error || 'Authentication failed');
+                // Redirect to error page
+                router.push('/linkedaccounts/unsuccessful');
               }
             } catch (error) {
               console.error('Error during Facebook authentication:', error);
-              setError('Failed to authenticate with Facebook. Please try again.');
+              router.push('/linkedaccounts/unsuccessful');
             }
           } else {
             setError('Facebook login was cancelled or failed.');
+            setIsLoading(false);
           }
-          setIsLoading(false);
         }, {
           scope: 'email,public_profile'
         });
