@@ -4,7 +4,7 @@ export const PLASMIC = initPlasmicLoader({
   projects: [
     {
       id: "ikntRJztLQ15JDT4bJs6fH",
-      token: "xMbtIqdlnXii1EpjoNI5KhdJqzwCnbjmPHpSGxaGBTHPp1TbNhJJ4z9Pex0EIR9HhJKJ1jFqp8ZtTBMJEm5g",
+      token: process.env.PLASMIC_API_TOKEN || "",
     },
   ],
 
@@ -12,7 +12,7 @@ export const PLASMIC = initPlasmicLoader({
   // For development, you can set preview to true, which will use the unpublished
   // project, allowing you to see your designs without publishing.  Please
   // only use this for development, as this is significantly slower.
-  preview: false,
+  preview: process.env.NODE_ENV === "development",
 });
 
 // You can register any code components that you want to use here; see
