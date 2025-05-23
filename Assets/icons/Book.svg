@@ -1,0 +1,12 @@
+<svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Book">
+<rect width="150" height="150" fill="url(#paint0_linear_824_349)"/>
+<path id="Icon" d="M25 121.875C25 117.731 26.6462 113.757 29.5765 110.826C32.5067 107.896 36.481 106.25 40.625 106.25H125M25 121.875C25 126.019 26.6462 129.993 29.5765 132.924C32.5067 135.854 36.481 137.5 40.625 137.5H125V12.5H40.625C36.481 12.5 32.5067 14.1462 29.5765 17.0765C26.6462 20.0067 25 23.981 25 28.125V121.875Z" stroke="#1E1E1E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_824_349" x1="75" y1="0" x2="75" y2="150" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="white" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>

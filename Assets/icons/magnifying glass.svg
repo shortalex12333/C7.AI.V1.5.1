@@ -1,0 +1,18 @@
+<svg width="161" height="185" viewBox="0 0 161 185" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="magnifying glass" filter="url(#filter0_d_824_279)">
+<rect id="Rectangle 588" width="20.39" height="91.755" rx="10.195" transform="matrix(-0.819152 -0.573576 -0.573576 0.819152 69.332 105.489)" fill="#242424"/>
+<circle id="Ellipse 43" cx="95.8301" cy="61.17" r="55.17" stroke="#242424" stroke-width="12"/>
+</g>
+<defs>
+<filter id="filter0_d_824_279" x="0.00390625" y="0" width="160.996" height="184.647" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_824_279"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_824_279" result="shape"/>
+</filter>
+</defs>
+</svg>
