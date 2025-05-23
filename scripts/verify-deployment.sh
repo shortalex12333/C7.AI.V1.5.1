@@ -59,5 +59,49 @@ else
     exit 1
 fi
 
+# Check HTTP status code
+echo "Checking HTTP status code..."
+if curl -s --head https://celeste7.ai | grep "200 OK" > /dev/null; then
+    echo -e "${GREEN}✅ HTTP status code is 200 OK${NC}"
+else
+    echo -e "${RED}❌ HTTP status code is not 200 OK${NC}"
+    exit 1
+fi
+
+# Check page content
+echo "Checking page content..."
+if curl -s https://celeste7.ai | grep "<title>" > /dev/null; then
+    echo -e "${GREEN}✅ Page content is valid${NC}"
+else
+    echo -e "${RED}❌ Page content is invalid${NC}"
+    exit 1
+fi
+
+# Run smoke tests
+echo "Running smoke tests..."
+echo "Testing home page..."
+if curl -s https://celeste7.ai | grep -i "celeste" > /dev/null; then
+    echo -e "${GREEN}✅ Home page content verified${NC}"
+else
+    echo -e "${RED}❌ Home page content invalid${NC}"
+    exit 1
+fi
+
+echo "Testing 404 page..."
+if curl -s https://celeste7.ai/nonexistent-page | grep -i "404" > /dev/null; then
+    echo -e "${GREEN}✅ 404 page working correctly${NC}"
+else
+    echo -e "${RED}❌ 404 page not working correctly${NC}"
+    exit 1
+fi
+
+echo "Testing internal route..."
+if curl -s https://celeste7.ai/settings/my-brand | grep -i "my brand" > /dev/null; then
+    echo -e "${GREEN}✅ Internal route accessible${NC}"
+else
+    echo -e "${RED}❌ Internal route not accessible${NC}"
+    exit 1
+fi
+
 echo -e "${GREEN}✅ All verification checks passed!${NC}"
 exit 0 
