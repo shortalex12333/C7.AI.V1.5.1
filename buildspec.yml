@@ -5,8 +5,13 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm install
-      - npm install -g npm@latest
+      - npm ci
+      - npm cache clean --force
+
+  pre_build:
+    commands:
+      - echo "Starting build process"
+      - npm --version
 
   build:
     commands:
