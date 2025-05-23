@@ -6,26 +6,36 @@ phases:
       nodejs: 18
     commands:
       - npm ci
+      - npm cache clean --force
 
   pre_build:
     commands:
       - echo "Starting build..."
       - npm --version
       - node --version
+      - echo "Verifying Next.js installation"
 
   build:
     commands:
+      - echo "Building Next.js application"
       - npm run build
+      - echo "Exporting static files"
       - npm run export
+      - echo "Verifying build output"
+      - ls -la out
 
   post_build:
     commands:
       - echo "Build complete at `date`"
+      - echo "Verifying artifacts"
+      - ls -la out
 
 artifacts:
   base-directory: out
   files:
     - '**/*'
+    - '!.git/**/*'
+    - '!node_modules/**/*'
 
 cache:
   paths:
