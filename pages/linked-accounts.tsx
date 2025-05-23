@@ -1,8 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
 
 export default function LinkedAccounts() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     // Initialize Facebook SDK after it's loaded
     if (window.FB) {
@@ -16,18 +19,53 @@ export default function LinkedAccounts() {
     }
   }, []);
 
-  const handleFacebookLogin = () => {
-    if (window.FB) {
-      window.FB.login((response: any) => {
-        if (response.authResponse) {
-          console.log('Successfully logged in with Facebook!');
-          // Handle successful login here
-        } else {
-          console.log('User cancelled login or did not fully authorize.');
-        }
-      }, {
-        scope: 'email,public_profile'
-      });
+  const handleFacebookLogin = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (window.FB) {
+        window.FB.login(async (response: any) => {
+          if (response.authResponse) {
+            try {
+              // Send the access token to our backend
+              const result = await fetch('/api/auth/facebook', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  accessToken: response.authResponse.accessToken,
+                }),
+              });
+
+              const data = await result.json();
+
+              if (data.success) {
+                console.log('Successfully authenticated with Facebook!', data.user);
+                // Here you would typically:
+                // 1. Update the UI to show the connected state
+                // 2. Store the user data in your app's state management
+                // 3. Redirect to a success page or show a success message
+              } else {
+                throw new Error(data.error || 'Authentication failed');
+              }
+            } catch (error) {
+              console.error('Error during Facebook authentication:', error);
+              setError('Failed to authenticate with Facebook. Please try again.');
+            }
+          } else {
+            setError('Facebook login was cancelled or failed.');
+          }
+          setIsLoading(false);
+        }, {
+          scope: 'email,public_profile'
+        });
+      }
+    } catch (error) {
+      console.error('Error during Facebook login:', error);
+      setError('An unexpected error occurred. Please try again.');
+      setIsLoading(false);
     }
   };
 
@@ -88,11 +126,19 @@ export default function LinkedAccounts() {
                     </div>
                     <button
                       onClick={handleFacebookLogin}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      disabled={isLoading}
+                      className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+                        isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                     >
-                      Connect
+                      {isLoading ? 'Connecting...' : 'Connect'}
                     </button>
                   </div>
+                  {error && (
+                    <div className="mt-2 text-sm text-red-600">
+                      {error}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
