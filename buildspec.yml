@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - npm install
+      - npm install -g npm@latest
+
+  build:
+    commands:
+      - npm run build
+      - npm run export
+
+  post_build:
+    commands:
+      - echo "Build completed on `date`"
+
+artifacts:
+  files:
+    - '**/*'
+    - '!.git/**/*'
+    - '!node_modules/**/*'
+    - '!temp_repo/**/*'
+  base-directory: .
+  name: c7-ai-v1.5.1-build-$(date +%Y-%m-%d-%H-%M-%S)
+
+cache:
+  paths:
+    - 'node_modules/**/*' 
