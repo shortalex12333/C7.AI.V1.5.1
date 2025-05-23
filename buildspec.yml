@@ -23,12 +23,16 @@ phases:
       - npm run export
       - echo "Verifying build output"
       - ls -la out
+      - echo "Checking for static export files"
+      - find out -type f -name "*.html" | wc -l
 
   post_build:
     commands:
       - echo "Build complete at `date`"
       - echo "Verifying artifacts"
       - ls -la out
+      - echo "Checking export directory structure"
+      - find out -type d | sort
 
 artifacts:
   base-directory: out
@@ -36,6 +40,7 @@ artifacts:
     - '**/*'
     - '!.git/**/*'
     - '!node_modules/**/*'
+    - '!.next/**/*'
 
 cache:
   paths:
