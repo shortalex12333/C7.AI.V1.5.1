@@ -5,8 +5,8 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - npm ci
-      - npm cache clean --force
+      - npm install
+      - npm install -g aws-cli
 
   pre_build:
     commands:
@@ -29,11 +29,17 @@ phases:
       - echo "Build complete at `date`"
       - echo "Verifying artifacts"
       - ls -la out
+      - aws s3 rm s3://celeste7.ai --recursive
+      - aws s3 sync out/ s3://celeste7.ai --delete
+      - aws s3 cp out/index.html s3://celeste7.ai/index.html
+      - aws s3 website s3://celeste7.ai --index-document index.html --error-document 404.html
+      - echo "Invalidating CloudFront cache"
+      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
 
 artifacts:
-  base-directory: out
   files:
     - '**/*'
+  base-directory: 'out'
 
 cache:
   paths:
