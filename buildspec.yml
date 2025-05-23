@@ -6,36 +6,26 @@ phases:
       nodejs: 18
     commands:
       - npm ci
-      - npm cache clean --force
 
   pre_build:
     commands:
-      - echo "Starting build process"
+      - echo "Starting build..."
       - npm --version
       - node --version
 
   build:
     commands:
-      - echo "Building Next.js application"
-      - npm run build --no-lint
+      - npm run build
       - npm run export
 
   post_build:
     commands:
-      - echo "Build completed on `date`"
-      - ls -la .next
-      - ls -la out
-      - echo "Verifying build artifacts"
+      - echo "Build complete at `date`"
 
 artifacts:
+  base-directory: out
   files:
     - '**/*'
-    - '!.git/**/*'
-    - '!node_modules/**/*'
-    - '!temp_repo/**/*'
-    - '!.next/**/*'
-  base-directory: out
-  name: c7-ai-v1.5.1-build-$(date +%Y-%m-%d-%H-%M-%S)
 
 cache:
   paths:
