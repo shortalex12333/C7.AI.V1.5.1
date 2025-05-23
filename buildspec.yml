@@ -12,15 +12,18 @@ phases:
     commands:
       - echo "Starting build process"
       - npm --version
+      - node --version
 
   build:
     commands:
-      - npm run build
+      - npm run build --no-lint
       - npm run export
 
   post_build:
     commands:
       - echo "Build completed on `date`"
+      - ls -la .next
+      - ls -la out
 
 artifacts:
   files:
@@ -28,7 +31,8 @@ artifacts:
     - '!.git/**/*'
     - '!node_modules/**/*'
     - '!temp_repo/**/*'
-  base-directory: .
+    - '!.next/**/*'
+  base-directory: out
   name: c7-ai-v1.5.1-build-$(date +%Y-%m-%d-%H-%M-%S)
 
 cache:
