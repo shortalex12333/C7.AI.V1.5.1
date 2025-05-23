@@ -1,10 +1,7 @@
-import { PlasmicRootProvider, PlasmicComponent } from '@plasmicapp/loader-react';
-import { PLASMIC } from '../plasmic-init';
-
 export default function Home() {
   return (
-    <PlasmicRootProvider loader={PLASMIC}>
-      <PlasmicComponent component="HomePage" />
-    </PlasmicRootProvider>
+    <main>
+      <h1>Welcome to C7.AI</h1>
+    </main>
   );
 } 
