@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  distDir: 'out',
   images: {
     unoptimized: true,
-    domains: ['celeste7.ai'],
   },
   env: {
     FACEBOOK_APP_ID: '1039676121523538',
@@ -11,11 +11,16 @@ const nextConfig = {
   },
   trailingSlash: true,
   // Disable server-side features for static export
-  experimental: {
-    appDir: false,
-  },
   // Ensure all pages are static
   staticPageGenerationTimeout: 120,
+  // Ensure index.html is generated at the root
+  exportPathMap: async function () {
+    return {
+      '/': { page: '/' },
+      '/404': { page: '/404' },
+      // Add other routes as needed
+    };
+  },
 };
 
 module.exports = nextConfig; 

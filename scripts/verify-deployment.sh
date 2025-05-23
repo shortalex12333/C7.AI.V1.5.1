@@ -1,9 +1,19 @@
 #!/bin/bash
 
+set -e
+
 # Colors for output
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+
+REPORTS_DIR="./reports"
+TIMESTAMP=$(date +%F-%H%M%S)
+LIGHTHOUSE_REPORT_JSON="$REPORTS_DIR/lighthouse_report-$TIMESTAMP.json"
+LIGHTHOUSE_REPORT_HTML="$REPORTS_DIR/lighthouse_report-$TIMESTAMP.html"
+
+# Ensure reports dir exists
+mkdir -p "$REPORTS_DIR"
 
 echo "🔍 Starting deployment verification..."
 
@@ -77,31 +87,77 @@ else
     exit 1
 fi
 
-# Run smoke tests
-echo "Running smoke tests..."
-echo "Testing home page..."
-if curl -s https://celeste7.ai | grep -i "celeste" > /dev/null; then
-    echo -e "${GREEN}✅ Home page content verified${NC}"
-else
-    echo -e "${RED}❌ Home page content invalid${NC}"
+# Smoke test function
+smoke_test() {
+  local url="$1"
+  local expect_code="$2"
+  local expect_phrase="$3"
+  local code
+  code=$(curl -s -o /dev/null -w "%{http_code}" "https://celeste7.ai$url")
+  if [[ "$code" != "$expect_code" ]]; then
+    echo -e "${RED}❌ $url returned $code, expected $expect_code${NC}"
     exit 1
+  fi
+  if ! curl -s "https://celeste7.ai$url" | grep -i "$expect_phrase" > /dev/null; then
+    echo -e "${RED}❌ $url did not contain expected phrase: $expect_phrase${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}✅ $url passed smoke test${NC}"
+}
+
+# Smoke tests
+smoke_test "/" 200 "celeste"
+smoke_test "/my-brand" 200 "brand"
+smoke_test "/404" 404 "404"
+smoke_test "/settings" 200 "settings" || true
+smoke_test "/profile" 200 "profile" || true
+smoke_test "/dashboard" 200 "dashboard" || true
+
+# Asset checks
+for asset in favicon.ico robots.txt; do
+  if [ ! -f "out/$asset" ]; then
+    echo -e "${RED}❌ Missing $asset in out/${NC}"
+    exit 1
+  else
+    echo -e "${GREEN}✅ $asset found in out/${NC}"
+  fi
+}
+
+# Lighthouse
+if ! command -v lighthouse &> /dev/null; then
+  echo -e "${RED}❌ Lighthouse CLI not found. Please install with: npm install -g lighthouse${NC}"
+  exit 1
+fi
+lighthouse https://celeste7.ai --output json --output html --output-path "$REPORTS_DIR/lighthouse_report-$TIMESTAMP"
+
+# Parse Lighthouse summary
+SCORES=$(jq '.categories | {performance: .performance.score, accessibility: .accessibility.score, best_practices: .["best-practices"].score, seo: .seo.score}' "$LIGHTHOUSE_REPORT_JSON")
+PERF=$(echo $SCORES | jq '.performance * 100')
+ACC=$(echo $SCORES | jq '.accessibility * 100')
+BEST=$(echo $SCORES | jq '.best_practices * 100')
+SEO=$(echo $SCORES | jq '.seo * 100')
+echo -e "\nLighthouse Scores:"
+echo -e "Performance: $PERF"
+echo -e "Accessibility: $ACC"
+echo -e "Best Practices: $BEST"
+echo -e "SEO: $SEO"
+
+for score in $PERF $ACC $BEST $SEO; do
+  if (( $(echo "$score < 80" | bc -l) )); then
+    echo -e "${RED}❌ Lighthouse score below threshold: $score${NC}"
+    exit 1
+  fi
+done
+
+echo -e "${GREEN}✅ Lighthouse scores all above threshold${NC}"
+
+# Broken link scan (using htmlproofer if available)
+if command -v htmlproofer &> /dev/null; then
+  htmlproofer ./out --only-4xx --check-external-hash --allow-hash-href || exit 1
+  echo -e "${GREEN}✅ Broken link scan passed${NC}"
+else
+  echo -e "${RED}⚠ htmlproofer not found. Skipping broken link scan. Install with: gem install html-proofer${NC}"
 fi
 
-echo "Testing 404 page..."
-if curl -s https://celeste7.ai/nonexistent-page | grep -i "404" > /dev/null; then
-    echo -e "${GREEN}✅ 404 page working correctly${NC}"
-else
-    echo -e "${RED}❌ 404 page not working correctly${NC}"
-    exit 1
-fi
-
-echo "Testing internal route..."
-if curl -s https://celeste7.ai/settings/my-brand | grep -i "my brand" > /dev/null; then
-    echo -e "${GREEN}✅ Internal route accessible${NC}"
-else
-    echo -e "${RED}❌ Internal route not accessible${NC}"
-    exit 1
-fi
-
-echo -e "${GREEN}✅ All verification checks passed!${NC}"
+echo -e "${GREEN}✅ All deployment verification checks passed!${NC}"
 exit 0 

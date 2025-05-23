@@ -10,6 +10,13 @@ Use this checklist to verify successful deployment of celeste7.ai.
 - [ ] Environment variables configured
 - [ ] Build tested locally
 
+### 🛠 Build Verification (Pre-Deploy)
+- [ ] Run `npm run build && npm run export`
+- [ ] Confirm `/out/index.html` exists
+- [ ] Confirm `/out/404.html` exists
+- [ ] Open `/out/index.html` locally and verify content renders
+- [ ] Check for expected folder structure: `_next/`, `static/`, etc.
+
 ## Pipeline Verification
 
 - [ ] Pipeline ran without errors
