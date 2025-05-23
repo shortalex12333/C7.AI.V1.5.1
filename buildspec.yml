@@ -6,7 +6,6 @@ phases:
       nodejs: 18
     commands:
       - npm ci
-      - npm install @plasmicapp/loader-nextjs@latest
       - npm cache clean --force
 
   pre_build:
@@ -14,19 +13,6 @@ phases:
       - echo "Starting build process"
       - npm --version
       - node --version
-      - echo "Creating next.config.js"
-      - |
-        echo 'const { withPlasmic } = require("@plasmicapp/loader-nextjs");
-        module.exports = withPlasmic({
-          plasmic: {
-            projects: [
-              {
-                projectId: "your-project-id",
-                token: process.env.PLASMIC_TOKEN
-              }
-            ]
-          }
-        });' > next.config.js
 
   build:
     commands:
